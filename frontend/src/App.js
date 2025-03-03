@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router,Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Chat from './pages/Chat';
 import { Provider } from 'react-redux';
@@ -22,20 +22,22 @@ const theme = createTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Provider store={store}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <Nav />
-          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/chat" element={<Chat />} />
-            </Routes>
+    <Router>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Provider store={store}>
+          <Box>
+            <Nav />
+            <Box>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/chat" element={<Chat />} />
+              </Routes>
+            </Box>
           </Box>
-        </Box>
-      </Provider>   
-    </ThemeProvider>
+        </Provider>   
+      </ThemeProvider>
+    </Router>
   );
 }
 
