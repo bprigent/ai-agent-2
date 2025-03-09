@@ -1,0 +1,103 @@
+@import '../../scss/mainColors.scss';
+@import '../../scss/paddings.scss';
+@import '../../scss/borderRadius.scss';
+@import '../../scss/shadows.scss';
+@import '../../scss/fonts.scss';
+
+
+
+.chat_form {
+    position: fixed;
+    bottom: 32px;
+    left: calc(50% - (632px / 2) + (56px / 2));
+    width: 100%;
+    max-width: 632px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    background-color: $color-bg-white;
+
+    padding: 0px;
+    border-radius: $border-radius-medium;
+    border: 1px solid $color-border-dark;
+
+    box-shadow: $shadow-small;
+}
+
+.chat_form-input {
+    width: 100%;
+    border-radius: $border-radius-small;
+    border: 0px solid;
+    padding: $padding-medium;
+    min-height: 88px;
+    max-height: 256px;
+    overflow-y: auto;
+    word-break: break-word;
+    cursor: text;
+
+    &:empty:before {
+        content: attr(data-placeholder);
+        color: $color-text-quaternary;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    font-family: $font-family-primary;
+    font-size: $font-size-p_medium;
+    font-weight: $font-weight-medium;
+}
+
+.chat_form-button_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center; 
+    justify-content: space-between;
+    width: 100%;
+
+    padding-left: $padding-medium;
+    padding-right: $padding-small;
+    padding-top: 0px;
+    padding-bottom: $padding-small;
+
+    font-family: $font-family-primary;
+    font-size: $font-size-p_small;
+    font-weight: $font-weight-regular;
+    color: $color-text-quaternary;
+}
+
+.chat_form-button_container-CTA_wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+
+
+// arrow button
+.chat_form-button_container-arrow {
+    width: 20px;
+    height: 20px;
+
+    background-color: $color-bg-ghost;
+    border-radius: 4px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid $color-border-dark;
+    color: $color-text-tertiary;
+    margin-right: 4px;
+}
+
+.chat_form-button_container-arrow svg {
+    width: 14px;
+    height: 14px;
+}

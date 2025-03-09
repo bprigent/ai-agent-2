@@ -1,0 +1,41 @@
+@import '../../scss/borderRadius.scss';
+@import '../../scss/mainColors.scss';
+@import '../../scss/fonts.scss';
+@import '../../scss/paddings.scss';
+@import '../../scss/shadows.scss';
+
+
+
+.message_user-parent_wrapper {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+
+    padding-top: 24px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+}
+
+.message_user-text {
+    background-color: $color-bg-white;
+    border-radius: $border-radius-small $border-radius-small 2px $border-radius-small;
+    border: 1px solid $color-border-dark;
+    padding: $padding-small;
+    box-shadow: $shadow-xs;
+    margin-bottom: 4px;
+    font-family: $font-family-primary;
+
+    font-size: $font-size-p_14;
+    font-weight: $font-weight-regular;
+    color: $color-text-primary;
+}
+
+
+.message_user-date {
+    font-size: $font-size-p_small;
+    font-weight: $font-weight-regular;
+    color: $color-text-tertiary;
+}

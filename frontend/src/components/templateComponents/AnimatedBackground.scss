@@ -1,0 +1,62 @@
+@import '../../scss/mainColors.scss';
+
+$blur-size: 100px;
+$opacity: .33;
+
+.animated_background {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $color-bg-ghost;
+    overflow: hidden;
+}
+
+.animated_background-content {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+.animated_background-svg_1 {
+    position: absolute;
+    z-index: 1;
+    left: 32px;
+    top: -92px;
+    width: 395px;
+    height: auto;
+    opacity: $opacity;
+    path {
+        fill: $color-primary;
+    }
+    filter: blur($blur-size);
+}
+
+.animated_background-svg_2 {
+    position: absolute;
+    z-index: 1;
+    left: -313px;
+    top: 256px;
+    width: 677px;
+    height: auto;
+    opacity: $opacity;
+    path {
+        fill: $color-secondary;
+    }
+    filter: blur($blur-size);
+}
+
+.animated_background-svg_3 {
+    position: absolute;
+    z-index: 1;
+    left: 780px;
+    top: -114px;
+    width: 677px;
+    height: auto;
+    opacity: $opacity;
+    path {
+        fill: $color-tertiary;
+    }
+    filter: blur($blur-size);
+}

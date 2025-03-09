@@ -1,0 +1,62 @@
+@import '../../scss/mainColors.scss';
+@import '../../scss/paddings.scss';
+@import '../../scss/fonts.scss';
+@import '../../scss/borderRadius.scss';
+
+.number_msg-parent_w {
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 24px;
+
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    font-family: $font-family-primary;
+}
+
+.number_msg-child_w {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: $border-radius-small;
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.number_msg-value_w {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 2px;
+}
+
+.number_msg-value_w-value {
+    font-size: $font-size-h_3;
+    font-weight: $font-weight-bold;
+    color: $color-text-secondary;
+}
+
+.number_msg-value_w-metric {
+    font-size: $font-size-p_medium;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+}
+
+.number_msg-label {
+    font-size: $font-size-p_14;
+    font-weight: $font-weight-medium;
+    color: $color-text-tertiary;
+    margin-top: -2px;
+}
+
+.number_msg-date {
+    font-size: $font-size-p_small;
+    font-weight: $font-weight-regular;
+    color: $color-text-tertiary;
+    margin-top: 4px;
+}

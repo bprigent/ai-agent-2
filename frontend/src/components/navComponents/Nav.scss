@@ -1,0 +1,25 @@
+@import '../../scss/mainColors.scss';
+@import '../../scss/paddings.scss';
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 56px;
+    height: 100vh;
+    background-color: $color-bg-ghost;
+    border-right: 1px solid $color-border-dark;
+    padding: $padding-small;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+} 
+
+.sidebar-list {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: $padding-small;
+}

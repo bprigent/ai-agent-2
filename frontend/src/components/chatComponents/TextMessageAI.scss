@@ -1,0 +1,31 @@
+
+@import '../../scss/mainColors.scss';
+@import '../../scss/paddings.scss';
+@import '../../scss/fonts.scss';
+
+
+
+.messageAI-parent_wrapper {
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 24px;
+
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    }
+
+.messageAI-text {
+    font-size: $font-size-p_large;
+    font-weight: 500;
+    color: $color-text-primary;
+}
+
+.messageAI-date {
+    font-size: $font-size-p_small;
+    font-weight: $font-weight-regular;
+    color: $color-text-tertiary;
+    margin-top: 4px;
+}

@@ -1,0 +1,10 @@
+@import '../scss/mainColors.scss';
+@import '../scss/paddings.scss';
+@import '../scss/borderRadius.scss';
+@import '../scss/shadows.scss';
+
+.chat_page {
+    height: 100%;
+    position: relative;
+    overflow-y: auto;
+}

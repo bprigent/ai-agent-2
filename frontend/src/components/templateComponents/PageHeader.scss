@@ -1,0 +1,23 @@
+@import '../../scss/mainColors.scss';
+@import '../../scss/paddings.scss';
+@import '../../scss/fonts.scss';
+
+
+
+.page_header {
+    padding: $padding-medium;
+    height: 56px;
+    background-color: $color-bg-ghost;
+    border-bottom: 1px solid $color-border-dark;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.page_header-title {
+    color: $color-text-primary;
+    font-size: $font-size-p_large;
+    font-family: $font-family-primary;
+    font-weight: $font-weight-medium;
+}

@@ -1,0 +1,40 @@
+@import '../../scss/paddings.scss';
+@import '../../scss/fonts.scss';
+@import '../../scss/borderRadius.scss';
+@import '../../scss/mainColors.scss';
+
+
+.pie_message_ai-parent_w {
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 24px;
+
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    font-family: $font-family-primary;
+}
+
+
+
+.pie_message_ai-child_w {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    max-width: 500px;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: $border-radius-small;
+    padding: $padding-small;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+
+.pie_message_ai-date {
+    font-size: $font-size-p_small;
+    font-weight: $font-weight-regular;
+    color: $color-text-tertiary;
+    margin-top: 4px;
+}
