@@ -1,84 +1,47 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
 from pydantic import BaseModel
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
-from typing import List, Dict
-import json
+import hashlib
 
 app = FastAPI()
 
-# Enable CORS
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000"],  # React app address
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Initialize model and tokenizer
-MODEL_NAME = "facebook/opt-350m"  # You can change this to any other model
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
-
-class Message(BaseModel):
+class UserMessage(BaseModel):
     message: str
 
-class Conversation:
-    def __init__(self):
-        self.history: List[Dict[str, str]] = []
-        self.max_history = 10  # Adjust based on your needs
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
-    def add_message(self, role: str, content: str):
-        self.history.append({"role": role, "content": content})
-        if len(self.history) > self.max_history:
-            self.history = self.history[-self.max_history:]
+@app.post("/api/v1/chat")
+async def chat(message: UserMessage):
+    # Return a simple response matching the expected frontend format
+    response_message = "Hello! I am an AI assistant. How can I help you today?"
+    
+    date = datetime.now().isoformat()
+    # Create hash from combination of message and date
+    hash_input = f"{response_message}{date}".encode('utf-8')
+    hash_value = hashlib.sha256(hash_input).hexdigest()
 
-    def get_context(self) -> str:
-        return "\n".join([f"{msg['role']}: {msg['content']}" for msg in self.history])
+    response = {
+        "id": hash_value,
+        "date": date,
+        "sender": "ai",
+        "type": "text",
+        "content": {
+            "text": response_message
+        }
+    }
 
-conversation = Conversation()
+    return response
 
-@app.post("/chat")
-async def chat(message: Message):
-    try:
-        # Add user message to conversation history
-        conversation.add_message("user", message.message)
-
-        # Get conversation context
-        context = conversation.get_context()
-
-        # Prepare input for the model
-        inputs = tokenizer(context, return_tensors="pt", truncation=True, max_length=512)
-        
-        # Generate response
-        with torch.no_grad():
-            outputs = model.generate(
-                inputs["input_ids"],
-                max_length=200,
-                num_return_sequences=1,
-                temperature=0.7,
-                pad_token_id=tokenizer.eos_token_id
-            )
-
-        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        
-        # Clean up the response to get only the new generated text
-        response = response.replace(context, "").strip()
-        
-        # Add AI response to conversation history
-        conversation.add_message("assistant", response)
-
-        return {"response": response}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/conversation")
-async def get_conversation():
-    return {"history": conversation.history}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    

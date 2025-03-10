@@ -1,4 +1,53 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
+
+// send message to backend on /api/v1/chat
+export const sendMessage = createAsyncThunk(
+    'messages/sendMessage', 
+    async (message, { dispatch }) => {
+        try {
+            // First, add the user's message
+            const userMessage = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                sender: 'user',
+                type: 'text',
+                content: {
+                    text: message,
+                },
+            };
+
+            // Add user message to Redux store
+            dispatch(addMessage(userMessage));
+
+            // Send message to backend
+            const response = await fetch('http://localhost:8000/api/v1/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({message: message}),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            // Get response from backend
+            const backendResponse = await response.json();
+            
+            // return data and add to Redux store
+            return backendResponse;
+
+        } catch (error) {
+            console.error('Error sending message:', error);
+            throw error;
+        }
+    }
+);
+            
+
+
 
 const initialState = {
     messages: [
@@ -78,8 +127,22 @@ const messageSlice = createSlice({
             state.messages = [];
         },
     },
+    extraReducers: (builder) => {
+        builder.addCase(sendMessage.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(sendMessage.fulfilled, (state, action) => { 
+            state.isLoading = false;
+            state.messages.push(action.payload);
+        });
+        builder.addCase(sendMessage.rejected, (state, action) => {
+            state.isLoading = false;
+            state.error = action.error.message; 
+        });
+    },
 });
 
 export const { addMessage, setLoading, setError, clearMessages } = messageSlice.actions;
+
 export default messageSlice.reducer;
 

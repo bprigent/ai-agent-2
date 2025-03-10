@@ -5,6 +5,7 @@ import { ArrowForward, SubdirectoryArrowLeftRounded } from '@mui/icons-material'
 import { useDispatch } from 'react-redux';
 import { addMessage } from '../../store/messageSlice';
 import { createHash } from '../../helperfunctions/createHash';
+import { sendMessage } from '../../store/messageSlice';
 
 export default function ChatInput() {
 
@@ -23,25 +24,15 @@ export default function ChatInput() {
     }
 
     const handleMessageSubmit = (e) => {
+        // prevent default form submission
         e.preventDefault();
-        if (!message.trim()) return; // Prevent submitting empty messages
-        // Create timestamp
-        const now = new Date().toISOString();
-        // Create SHA hash from date and content
-        const hash = createHash([now, message]);
-        // Format the message
-        const formattedMessage = {
-            id: hash,
-            date: now,
-            sender: 'user',
-            type: 'text',
-            content: {
-                text: message.trim(),
-            }
-        };
-        // Dispatch the message to Redux store
-        dispatch(addMessage(formattedMessage));
+
+        // Prevent submitting empty messages
+        if (!message.trim()) return; 
         
+        // send message to backend
+        dispatch(sendMessage(message));
+
         // Clear input
         if (inputRef.current) {
             inputRef.current.textContent = '';
