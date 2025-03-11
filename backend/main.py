@@ -5,7 +5,8 @@ from pydantic import BaseModel
 import hashlib
 import os
 import pandas as pd
-from config import get_api_token
+from agent import get_agent_response
+
 
 app = FastAPI()
 
@@ -24,7 +25,7 @@ class UserMessage(BaseModel):
 @app.post("/api/v1/chat")
 async def chat(message: UserMessage):
     # Return a simple response matching the expected frontend format
-    response_message = "Hello! I am an AI assistant. How can I help you today?"
+    response_message = await get_agent_response(message.message)
     
     date = datetime.now().isoformat()
     # Create hash from combination of message and date
@@ -91,5 +92,3 @@ async def get_budget():
     return {
         "budget": budget
     }
-
-    
