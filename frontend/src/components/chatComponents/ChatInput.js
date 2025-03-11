@@ -3,8 +3,6 @@ import './ChatInput.scss';
 import { ButtonMediumPrimary } from '../Buttons';
 import { ArrowForward, SubdirectoryArrowLeftRounded } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
-import { addMessage } from '../../store/messageSlice';
-import { createHash } from '../../helperfunctions/createHash';
 import { sendMessage } from '../../store/messageSlice';
 
 export default function ChatInput() {

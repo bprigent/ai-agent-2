@@ -1,0 +1,13 @@
+.table_row-parent_w {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table_row-cell_w {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+}

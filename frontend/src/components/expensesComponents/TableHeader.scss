@@ -1,0 +1,25 @@
+@import '../../scss/fonts.scss';
+@import '../../scss/mainColors.scss';
+@import '../../scss/paddings.scss';
+@import '../../scss/borderRadius.scss';
+
+
+.table_header-parent_w {
+    font-family: $font-family-primary;
+    font-size: $font-size-p_small;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+
+.table_header-cell_w {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+}
