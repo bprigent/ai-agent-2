@@ -1,6 +1,7 @@
 import smolagents
 from config import get_api_token
-from smolagents import HfApiModel, CodeAgent
+from smolagents import HfApiModel, CodeAgent, DuckDuckGoSearchTool
+from tools import UserLocationTool, GetCurrentDateAndTime, FinalAnswerTool, UserInputTool, UserTimezoneTool
 
 # Initialize the model using HF API
 api_token = get_api_token()
@@ -12,13 +13,45 @@ model = HfApiModel(
     token=api_token
 )
 
+# Authorized imports
+authorized_imports = [
+    'random', 
+    'requests',
+    'math', 
+    'json', 
+    'datetime', 
+    'statistics',  
+    'stat', 
+    'hashlib',
+    'pandas',
+    'pytz',
+    'pycountry',
+    'logging',
+    'aiohttp',
+    'asyncio'
+]
 
+# tools
+get_user_location = UserLocationTool()
+get_current_date_and_time = GetCurrentDateAndTime()
+final_answer = FinalAnswerTool()
+user_input = UserInputTool()
+internet_search = DuckDuckGoSearchTool()
+get_user_timezone = UserTimezoneTool()
 # Initialize the agent
 agent = CodeAgent(
-    tools=[],
+    tools=[
+        get_current_date_and_time,
+        final_answer,
+        get_user_location,
+        user_input,
+        internet_search,
+        get_user_timezone
+    ],
     model=model,
-    add_base_tools=False,
-    verbosity_level=2
+    add_base_tools=True,
+    verbosity_level=2,
+    additional_authorized_imports=authorized_imports
 )
 
 
@@ -31,13 +64,13 @@ agent.prompt_templates["system_prompt"] = agent.prompt_templates["system_prompt"
 
 
 
-async def get_agent_response(user_message: str) -> str:
+def get_agent_response(user_message: str) -> str:
     """
     Get a response from the agent for a given user message
     """
     try:
         print(f"Received message: {user_message}") 
-        response = agent.run(user_message)  # Removed await since run() is not async
+        response = agent.run(user_message)
         print(f"Agent response: {response}")
         return str(response)  # Ensure we return a string
     

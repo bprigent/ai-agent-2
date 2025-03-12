@@ -25,7 +25,7 @@ class UserMessage(BaseModel):
 @app.post("/api/v1/chat")
 async def chat(message: UserMessage):
     # Return a simple response matching the expected frontend format
-    response_message = await get_agent_response(message.message)
+    response_message = get_agent_response(message.message)
     
     date = datetime.now().isoformat()
     # Create hash from combination of message and date
