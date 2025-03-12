@@ -9,3 +9,36 @@
     padding-bottom: 204px;
     position: relative;
 }
+
+
+
+.chat_list-empty_w {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 16px;
+    font-family: $font-family-primary;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+
+    padding-top: 80px;
+}
+
+.chat_list-empty_w h2 {
+    padding: 0;
+    margin: 0;
+    
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.chat_list-empty_w p {
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+}

@@ -50,7 +50,50 @@ export const sendMessage = createAsyncThunk(
 
 
 const initialState = {
-    messages: [
+    messages: [],
+    isLoading: false,
+    error: null,
+  };
+  
+const messageSlice = createSlice({
+    name: 'messages',
+    initialState,
+    reducers: {
+        addMessage: (state, action) => {
+            state.messages.push(action.payload);
+        },
+        setLoading: (state, action) => {
+            state.isLoading = action.payload;
+        },
+        setError: (state, action) => {
+            state.error = action.payload;
+        },
+        clearMessages: (state) => {
+            state.messages = [];
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(sendMessage.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(sendMessage.fulfilled, (state, action) => { 
+            state.isLoading = false;
+            state.messages.push(action.payload);
+        });
+        builder.addCase(sendMessage.rejected, (state, action) => {
+            state.isLoading = false;
+            state.error = action.error.message; 
+        });
+    },
+});
+
+export const { addMessage, setLoading, setError, clearMessages } = messageSlice.actions;
+
+export default messageSlice.reducer;
+
+/*
+// example of messages in the store
+messages: [
         {
             id: 1,
             date: '2025-03-07 12:00:00',
@@ -106,43 +149,5 @@ const initialState = {
             }
         },
     ],
-    isLoading: false,
-    error: null,
-  };
-  
-const messageSlice = createSlice({
-    name: 'messages',
-    initialState,
-    reducers: {
-        addMessage: (state, action) => {
-            state.messages.push(action.payload);
-        },
-        setLoading: (state, action) => {
-            state.isLoading = action.payload;
-        },
-        setError: (state, action) => {
-            state.error = action.payload;
-        },
-        clearMessages: (state) => {
-            state.messages = [];
-        },
-    },
-    extraReducers: (builder) => {
-        builder.addCase(sendMessage.pending, (state) => {
-            state.isLoading = true;
-        });
-        builder.addCase(sendMessage.fulfilled, (state, action) => { 
-            state.isLoading = false;
-            state.messages.push(action.payload);
-        });
-        builder.addCase(sendMessage.rejected, (state, action) => {
-            state.isLoading = false;
-            state.error = action.error.message; 
-        });
-    },
-});
 
-export const { addMessage, setLoading, setError, clearMessages } = messageSlice.actions;
-
-export default messageSlice.reducer;
-
+*/

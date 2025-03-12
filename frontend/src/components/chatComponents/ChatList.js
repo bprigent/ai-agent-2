@@ -9,9 +9,25 @@ import './ChatList.scss';
 
 
 const ChatList = () => {
-
+    // get messages from the store
     const messagesObjectList = useSelector((state) => state.messages.messages);
 
+    // check if the message list is empty
+    const emptyMessageList = messagesObjectList.length === 0;
+
+    // if the message list is empty, show a message
+    if (emptyMessageList) {
+        return (
+            <div className="chat_list-parent_w">
+                <div className="chat_list-empty_w">
+                    <h2>Hey there Benjamin,</h2>
+                    <p>How can I help you today?</p>
+                </div>
+            </div>
+        );
+    }
+
+    // if the message list is not empty, show the messagess
     return (
         <div className="chat_list-parent_w">
             {messagesObjectList.map(messageObj => 
