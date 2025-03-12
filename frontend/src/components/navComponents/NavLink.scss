@@ -1,6 +1,7 @@
 @import '../../scss/mainColors.scss';
 @import '../../scss/paddings.scss';
 @import '../../scss/borderRadius.scss';
+@import '../../scss/shadows.scss';
 
 .nav-link {
     height: 40px;
@@ -25,7 +26,11 @@
     
     &.active,
     &:active {
-        color: $color-text-primary;
+        color: $color-primary;
+        background-color: $color-bg-white;
+        border: 1px solid $color-border-dark;
+        box-shadow: $shadow-small;
+
     }
 }
 

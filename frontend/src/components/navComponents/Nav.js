@@ -12,9 +12,9 @@ const Nav = () => {
     return (
         <nav className="sidebar">
             <div className="sidebar-list">
-                <NavLink to="/chat" icon={<ModeCommentOutlined />} iconActive={<ModeCommentRounded />}  />
-                <NavLink to="/expenses" icon={<FormatListBulletedOutlined />} iconActive={<FormatListBulletedRounded />} />
-                <NavLink to="/account" icon={<PersonOutlined />} iconActive={<PersonRounded />} />
+                <NavLink to="/chat" icon={<ModeCommentOutlined />}  />
+                <NavLink to="/expenses" icon={<FormatListBulletedOutlined />} />
+                <NavLink to="/account" icon={<PersonOutlined />} />
             </div>
         </nav>
     );

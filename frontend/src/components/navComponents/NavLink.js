@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
 import './NavLink.scss';
 
-const NavLink = ({ to, icon, iconActive }) => {
+const NavLink = ({ to, icon, iconActive = icon }) => {
     return (
         <RouterNavLink 
             to={to} 
