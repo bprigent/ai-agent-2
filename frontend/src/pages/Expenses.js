@@ -69,10 +69,17 @@ const Expenses = () => {
     return (
         <MainPageWrap title="Expenses">
             <div className="expense_page-table-container_w">
-                <CustomTableHeader columns={expenseColumns} />
-                {expenses.map((expense, index) => (
-                    <CustomTableRow key={index} columns={expenseColumns} data={expense} />
-                ))}
+                <div className="expense_page-heading_2_w">
+                    <h2>Your recent transactions</h2>
+                </div>
+                <div className="expense_page-table-container_w-child">
+                    <CustomTableHeader columns={expenseColumns} />
+                    <div className="expense_page-table-container_w-body">
+                        {expenses.map((expense, index) => (
+                            <CustomTableRow key={index} columns={expenseColumns} data={expense} />
+                        ))}
+                    </div>
+                </div>
             </div>
         </MainPageWrap>
     );

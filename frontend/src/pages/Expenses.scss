@@ -1,3 +1,9 @@
+@import '../scss/mainColors.scss';
+@import '../scss/paddings.scss';
+@import '../scss/fonts.scss';
+@import '../scss/borderRadius.scss';
+@import '../scss/shadows.scss';
+
 .expense_page-table-container_w {
     display: flex;
     flex-direction: column;
@@ -6,4 +12,37 @@
     overflow-y: auto;
     
     height: 100%;
+
+    width: 100%;
+    max-width: 932px;
+    margin: 0 auto;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 80px;
+    padding-bottom: 16px;
+
+    border-right: 1px solid rgba(0, 0, 0, 0.07);
+    border-left: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.expense_page-table-container_w-child {
+    background-color: white;
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    box-shadow: $shadow-xs;
+}
+
+.expense_page-heading_2_w {
+    padding-bottom: 12px;
+}
+
+.expense_page-heading_2_w h2 {
+    font-size: 32px;
+    font-weight: 600;
+    color: $color-text-primary;
+    font-family: $font-family-primary;
+
+    padding: 0;
+    margin: 0;
 }

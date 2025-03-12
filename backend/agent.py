@@ -3,7 +3,6 @@ from config import get_api_token
 from smolagents import HfApiModel, CodeAgent
 
 # Initialize the model using HF API
-# Initialize agent
 api_token = get_api_token()
 model = HfApiModel(
     max_tokens=10000,
