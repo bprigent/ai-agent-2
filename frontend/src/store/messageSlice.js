@@ -1,29 +1,53 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { io } from 'socket.io-client';
 
 let socket = null;
 
-// Initialize WebSocket connection
-const initializeWebSocket = (dispatch) => {
+// Initialize Socket.IO connection
+const initializeSocketIO = (dispatch) => {
     if (socket === null) {
-        socket = new WebSocket('ws://localhost:8000/api/v1/chat');
+        // Create socket with auto-reconnection enabled
+        socket = io('http://localhost:8000', {
+            path: '/api/v1/socket.io/',  // Note the trailing slash
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 10000,
+            transports: ['websocket', 'polling'],  // Try WebSocket first, then fall back to polling
+        });
         
-        socket.onopen = () => {
-            console.log('WebSocket connection established');
+        // Connection events
+        socket.on('connect', () => {
+            console.log('Socket.IO connection established');
             dispatch(setError(null));
-        };
+        });
 
-        socket.onclose = () => {
-            console.log('WebSocket connection closed');
-            socket = null;
-        };
+        socket.on('disconnect', (reason) => {
+            console.log(`Socket.IO disconnected: ${reason}`);
+            if (reason === 'io server disconnect') {
+                // The server has forcefully disconnected the socket
+                socket.connect();
+            }
+        });
 
-        socket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-            dispatch(setError('WebSocket connection error'));
-        };
+        socket.on('connect_error', (error) => {
+            console.error('Socket.IO connection error:', error);
+            dispatch(setError(`Connection error: ${error.message}`));
+        });
 
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
+        socket.on('reconnect_attempt', (attemptNumber) => {
+            console.log(`Socket.IO reconnection attempt ${attemptNumber}`);
+            dispatch(setError(`Reconnecting (attempt ${attemptNumber})...`));
+        });
+
+        socket.on('reconnect_failed', () => {
+            console.error('Socket.IO reconnection failed');
+            dispatch(setError('Failed to reconnect. Please refresh the page.'));
+        });
+
+        // Message handling
+        socket.on('message', (data) => {
             const aiMessage = {
                 id: Date.now(),
                 date: new Date().toISOString(),
@@ -31,21 +55,21 @@ const initializeWebSocket = (dispatch) => {
                 ...data
             };
             dispatch(addMessage(aiMessage));
-        };
+        });
     }
     return socket;
 };
 
-// send message using WebSocket
+// send message using Socket.IO
 export const sendMessage = createAsyncThunk(
     'messages/sendMessage',
     async (message, { dispatch }) => {
         try {
-            // Ensure WebSocket is initialized
-            const ws = initializeWebSocket(dispatch);
+            // Ensure Socket.IO is initialized
+            const io = initializeSocketIO(dispatch);
             
-            if (!ws || ws.readyState !== WebSocket.OPEN) {
-                throw new Error('WebSocket is not connected');
+            if (!io.connected) {
+                throw new Error('Socket.IO is not connected');
             }
 
             // First, add the user's message
@@ -62,11 +86,11 @@ export const sendMessage = createAsyncThunk(
             // Add user message to Redux store
             dispatch(addMessage(userMessage));
 
-            // Send message through WebSocket
-            ws.send(JSON.stringify({ message: message }));
+            // Send message through Socket.IO
+            io.emit('chat_message', { message: message });
 
             // Note: We don't return anything here because responses
-            // will come through the WebSocket onmessage handler
+            // will come through the Socket.IO event handlers
             return null;
 
         } catch (error) {
@@ -97,9 +121,9 @@ const messageSlice = createSlice({
         },
         clearMessages: (state) => {
             state.messages = [];
-            // Close WebSocket connection when clearing messages
+            // Close Socket.IO connection when clearing messages
             if (socket) {
-                socket.close();
+                socket.disconnect();
                 socket = null;
             }
         },
