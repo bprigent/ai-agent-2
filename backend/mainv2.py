@@ -54,26 +54,18 @@ async def chat_message(sid, data: Dict[str, Any]):
     try:
         message = data.get("message", "")
         
-        # Check if streaming is requested (default to True)
-        stream_mode = data.get("stream", True)
+        # Get streaming response generator from agent
+        step_generator = get_agent_response(message)
         
-        if stream_mode:
-            # Get streaming response generator from agent
-            step_generator = get_agent_response(message, stream=True)
-            
-            # Send each step as it's generated
-            for step in step_generator:
-                await sio.emit('message', step, room=sid)
-        else:
-            # Get single response from agent (non-streaming mode)
-            response = get_agent_response(message, stream=False)
-            
-            # Send the response
-            await sio.emit('message', response, room=sid)
+        # Send each step as it's generated
+        for step in step_generator:
+            await sio.emit('message', step, room=sid)
             
     except Exception as e:
         print(f"Socket.IO error: {str(e)}")
         await sio.emit('error', {"error": str(e)}, room=sid)
+
+
 
 @app.get("/health")
 async def health_check():
