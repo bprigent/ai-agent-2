@@ -1,8 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
+from starlette.websockets import WebSocketState
 from pydantic import BaseModel
-import hashlib
 import os
 import pandas as pd
 from agent import get_agent_response
@@ -22,12 +21,28 @@ app.add_middleware(
 class UserMessage(BaseModel):
     message: str
 
-@app.post("/api/v1/chat")
-async def chat(message: UserMessage):
-    # Return a simple response matching the expected frontend format
-    formatted_response = get_agent_response(message.message)
-    
-    return formatted_response
+@app.websocket("/api/v1/chat")
+async def chat(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            # Receive the message from client
+            data = await websocket.receive_json()
+            
+            # Get response from agent
+            response = get_agent_response(data["message"])
+            
+            # The response is already formatted in agent.py, just send it
+            await websocket.send_json(response)
+            
+    except Exception as e:
+        print(f"WebSocket error: {str(e)}")
+        # Check if the connection is still open before trying to close it
+        try:
+            if websocket.client_state != WebSocketState.DISCONNECTED:
+                await websocket.close()
+        except Exception as close_error:
+            print(f"Error closing WebSocket: {str(close_error)}")
 
 
 @app.get("/health")

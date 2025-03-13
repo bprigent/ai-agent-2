@@ -1,11 +1,53 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+let socket = null;
 
-// send message to backend on /api/v1/chat
+// Initialize WebSocket connection
+const initializeWebSocket = (dispatch) => {
+    if (socket === null) {
+        socket = new WebSocket('ws://localhost:8000/api/v1/chat');
+        
+        socket.onopen = () => {
+            console.log('WebSocket connection established');
+            dispatch(setError(null));
+        };
+
+        socket.onclose = () => {
+            console.log('WebSocket connection closed');
+            socket = null;
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            dispatch(setError('WebSocket connection error'));
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const aiMessage = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                sender: 'ai',
+                ...data
+            };
+            dispatch(addMessage(aiMessage));
+        };
+    }
+    return socket;
+};
+
+// send message using WebSocket
 export const sendMessage = createAsyncThunk(
-    'messages/sendMessage', 
+    'messages/sendMessage',
     async (message, { dispatch }) => {
         try {
+            // Ensure WebSocket is initialized
+            const ws = initializeWebSocket(dispatch);
+            
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                throw new Error('WebSocket is not connected');
+            }
+
             // First, add the user's message
             const userMessage = {
                 id: Date.now(),
@@ -20,24 +62,12 @@ export const sendMessage = createAsyncThunk(
             // Add user message to Redux store
             dispatch(addMessage(userMessage));
 
-            // Send message to backend
-            const response = await fetch('http://localhost:8000/api/v1/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({message: message}),
-            });
+            // Send message through WebSocket
+            ws.send(JSON.stringify({ message: message }));
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            // Get response from backend
-            const backendResponse = await response.json();
-            
-            // return data and add to Redux store
-            return backendResponse;
+            // Note: We don't return anything here because responses
+            // will come through the WebSocket onmessage handler
+            return null;
 
         } catch (error) {
             console.error('Error sending message:', error);
@@ -45,16 +75,13 @@ export const sendMessage = createAsyncThunk(
         }
     }
 );
-            
-
-
 
 const initialState = {
     messages: [],
     isLoading: false,
     error: null,
-  };
-  
+};
+
 const messageSlice = createSlice({
     name: 'messages',
     initialState,
@@ -70,19 +97,23 @@ const messageSlice = createSlice({
         },
         clearMessages: (state) => {
             state.messages = [];
+            // Close WebSocket connection when clearing messages
+            if (socket) {
+                socket.close();
+                socket = null;
+            }
         },
     },
     extraReducers: (builder) => {
         builder.addCase(sendMessage.pending, (state) => {
             state.isLoading = true;
         });
-        builder.addCase(sendMessage.fulfilled, (state, action) => { 
+        builder.addCase(sendMessage.fulfilled, (state) => {
             state.isLoading = false;
-            state.messages.push(action.payload);
         });
         builder.addCase(sendMessage.rejected, (state, action) => {
             state.isLoading = false;
-            state.error = action.error.message; 
+            state.error = action.error.message;
         });
     },
 });

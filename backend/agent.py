@@ -64,13 +64,17 @@ agent.prompt_templates["system_prompt"] = agent.prompt_templates["system_prompt"
 
 
 
-def get_agent_response(user_message: str) -> str:
+def get_agent_response(user_message: str) -> dict:
     """
     Get a response from the agent for a given user message
     """
     try:
         print(f"Received message: {user_message}") 
-        response = agent.run(user_message)
+        response = agent.run(
+            task=user_message,
+            stream=False,
+            reset=True
+        )
         print(f"Agent response: {response}")
         
         # If response is already a string, use it directly
@@ -87,7 +91,7 @@ def get_agent_response(user_message: str) -> str:
         date = datetime.datetime.now().isoformat()
         custom_id = hashlib.sha256((content + date).encode('utf-8')).hexdigest()
         
-        formatted_answer_json = {
+        formatted_answer = {
             "id": custom_id,
             "date": date,
             "sender": "ai", 
@@ -96,8 +100,8 @@ def get_agent_response(user_message: str) -> str:
                 "text": content
             }
         }
-        print(f"Agent formatted response: {formatted_answer_json}")
-        return formatted_answer_json
+        print(f"Agent formatted response: {formatted_answer}")
+        return formatted_answer
     
     except Exception as e:
         error_response = {
@@ -109,4 +113,4 @@ def get_agent_response(user_message: str) -> str:
                 "text": f"Error getting response: {str(e)}"
             }
         }
-        return json.dumps(error_response)
+        return error_response  # Return as dict, not JSON string
