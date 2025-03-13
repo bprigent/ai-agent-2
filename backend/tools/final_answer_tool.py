@@ -1,10 +1,10 @@
 from smolagents import Tool
-
+from typing import Any
 class FinalAnswerTool(Tool):
     name = "final_answer"
-    description = "This tool sends the final answer to the user. This tool does not format the answer. Format the answer before using this tool."
-    inputs = {'answer': {'type': 'any', 'description': 'A well formatted and short final answer to the user`s problem.'}}
-    output_type = "string"
+    description = "Provides a final answer to the given problem."
+    inputs = {"answer": {"type": "any", "description": "The final answer to the problem"}}
+    output_type = "any"
 
-    def forward(self, answer: str) -> str:
+    def forward(self, answer: Any) -> Any:
         return answer

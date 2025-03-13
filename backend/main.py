@@ -25,24 +25,9 @@ class UserMessage(BaseModel):
 @app.post("/api/v1/chat")
 async def chat(message: UserMessage):
     # Return a simple response matching the expected frontend format
-    response_message = get_agent_response(message.message)
+    formatted_response = get_agent_response(message.message)
     
-    date = datetime.now().isoformat()
-    # Create hash from combination of message and date
-    hash_input = f"{response_message}{date}".encode('utf-8')
-    hash_value = hashlib.sha256(hash_input).hexdigest()
-
-    response = {
-        "id": hash_value,
-        "date": date,
-        "sender": "ai",
-        "type": "text",
-        "content": {
-            "text": response_message
-        }
-    }
-
-    return response
+    return formatted_response
 
 
 @app.get("/health")

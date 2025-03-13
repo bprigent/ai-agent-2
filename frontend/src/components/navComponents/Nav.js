@@ -1,11 +1,8 @@
 import React from 'react';
 import NavLink from './NavLink';
 import { ModeCommentOutlined } from '@mui/icons-material';
-import { ModeCommentRounded } from '@mui/icons-material';
 import { FormatListBulletedOutlined } from '@mui/icons-material';
-import { FormatListBulletedRounded } from '@mui/icons-material';
 import { PersonOutlined } from '@mui/icons-material';
-import { PersonRounded } from '@mui/icons-material';
 import './Nav.scss';
 
 const Nav = () => {

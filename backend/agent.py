@@ -49,7 +49,7 @@ agent = CodeAgent(
         get_user_timezone
     ],
     model=model,
-    add_base_tools=True,
+    add_base_tools=False,
     verbosity_level=2,
     additional_authorized_imports=authorized_imports
 )
@@ -72,7 +72,41 @@ def get_agent_response(user_message: str) -> str:
         print(f"Received message: {user_message}") 
         response = agent.run(user_message)
         print(f"Agent response: {response}")
-        return str(response)  # Ensure we return a string
+        
+        # If response is already a string, use it directly
+        if isinstance(response, str):
+            content = response.strip()
+        else:
+            content = str(response)
+            
+        # imports must be inside the method for tools
+        import hashlib
+        import datetime
+        import json
+
+        date = datetime.datetime.now().isoformat()
+        custom_id = hashlib.sha256((content + date).encode('utf-8')).hexdigest()
+        
+        formatted_answer_json = {
+            "id": custom_id,
+            "date": date,
+            "sender": "ai", 
+            "type": "text",
+            "content": {
+                "text": content
+            }
+        }
+        print(f"Agent formatted response: {formatted_answer_json}")
+        return formatted_answer_json
     
     except Exception as e:
-        return f"Error getting response: {str(e)}"
+        error_response = {
+            "id": hashlib.sha256(('error' + datetime.datetime.now().isoformat()).encode('utf-8')).hexdigest(),
+            "date": datetime.datetime.now().isoformat(),
+            "sender": "ai",
+            "type": "error",
+            "content": {
+                "text": f"Error getting response: {str(e)}"
+            }
+        }
+        return json.dumps(error_response)
