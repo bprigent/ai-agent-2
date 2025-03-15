@@ -3,11 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 import pandas as pd
-from agent import get_agent_response
 import socketio
+import asyncio
 from typing import Dict, Any
+from agent import get_agent_response
 
-# Create a Socket.IO instance
+# Create a Socket.IO instance with proper configuration
 sio = socketio.AsyncServer(
     async_mode='asgi',
     cors_allowed_origins=['http://localhost:3000'],
@@ -27,15 +28,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create an ASGI app from Socket.IO and mount it to the FastAPI app
-# This is the key change - we're mounting the Socket.IO app at the path /api/v1/socket.io
+# Create a Socket.IO ASGI app and wrap the FastAPI app
+# We're setting the socketio_path to match the client's expected path
 socket_app = socketio.ASGIApp(
     sio,
-    socketio_path='',  # Empty string means use the full path from mount point
-    other_asgi_app=app
+    other_asgi_app=app,
+    socketio_path='/api/v1/socket.io'  # Ensure the client matches this path
 )
-
-
 
 class UserMessage(BaseModel):
     message: str
@@ -43,28 +42,50 @@ class UserMessage(BaseModel):
 # Socket.IO event handlers
 @sio.event
 async def connect(sid, environ):
-    print(f"Client connected: {sid}")
+    print(f"🔌 Client connected: {sid}")
+    await sio.emit('connection_established', {"status": "connected"}, room=sid)
 
 @sio.event
 async def disconnect(sid):
-    print(f"Client disconnected: {sid}")
+    print(f"❌ Client disconnected: {sid}")
+
+
+
+
 
 @sio.event
 async def chat_message(sid, data: Dict[str, Any]):
     try:
         message = data.get("message", "")
-        
-        # Get streaming response generator from agent
-        step_generator = get_agent_response(message)
-        
-        # Send each step as it's generated
-        for step in step_generator:
-            await sio.emit('message', step, room=sid)
-            
+        print(f"📩 Received message from {sid}: {message}")
+
+        # Run response processing in a separate async task
+        asyncio.create_task(process_agent_response(sid, message))
+
     except Exception as e:
-        print(f"Socket.IO error: {str(e)}")
+        print(f"⚠️ Socket.IO error: {str(e)}")
         await sio.emit('error', {"error": str(e)}, room=sid)
 
+async def process_agent_response(sid, message):
+    """Handles streaming messages from the agent."""
+    try:
+        step_generator = get_agent_response(message)  # This returns a regular generator, not an async generator
+        for step in step_generator:  # Use regular for loop instead of async for
+            print(f"➡️ Sending step: {step}")
+            await sio.emit('message', step, room=sid)
+
+    except Exception as e:
+        print(f"⚠️ Error in process_agent_response: {str(e)}")
+        await sio.emit('error', {"error": str(e)}, room=sid)
+
+
+# Debugging event
+@sio.event
+async def debug(sid, data):
+    print(f"🐛 Debug event received from {sid}: {data}")
+    await sio.emit('debug_response', {"message": "Debugging works!"}, room=sid)
+
+    
 
 
 @app.get("/health")
@@ -108,6 +129,7 @@ async def get_budget():
     return {
         "budget": budget
     }
+
 # This is important - we need to export the socket_app as the main app
 # that will be imported by uvicorn
 app = socket_app
